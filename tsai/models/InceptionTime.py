@@ -19,6 +19,7 @@ class InceptionModule(Module):
         ks = [ks // (2**i) for i in range(3)]
         ks = [k if k % 2 != 0 else k - 1 for k in ks]  # ensure odd ks
         bottleneck = bottleneck if ni > 1 else False
+        print("ni,nf",ni,nf)
         self.bottleneck = Conv1d(ni, nf, 1, bias=False) if bottleneck else noop
         self.convs = nn.ModuleList([Conv1d(nf if bottleneck else ni, nf, k, bias=False) for k in ks])
         self.maxconvpool = nn.Sequential(*[nn.MaxPool1d(3, stride=1, padding=1), Conv1d(ni, nf, 1, bias=False)])
@@ -28,6 +29,7 @@ class InceptionModule(Module):
 
     def forward(self, x):
         input_tensor = x
+        print("x before bottle",x.shape)
         x = self.bottleneck(input_tensor)
         x = self.concat([l(x) for l in self.convs] + [self.maxconvpool(input_tensor)])
         return self.act(self.bn(x))
