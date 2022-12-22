@@ -63,7 +63,11 @@ class InceptionTime(Module):
         self.fc = nn.Linear(nf * 4, c_out)
 
     def forward(self, x):
+        print("before inception block",x.shape,x)
         x = self.inceptionblock(x)
+        print("before gap",x.shape,x)
         x = self.gap(x)
+        print("before fc",x.shape,x)
         x = self.fc(x)
+        print("after fc",x.shape,x)
         return x
